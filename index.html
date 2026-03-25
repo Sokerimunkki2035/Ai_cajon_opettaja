@@ -3,120 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mestari-opettaja</title>
+    <title>AI OPETTAJA</title>
     <style>
-        body { background: #121212; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; margin: 0; }
-        .kortti { background: #1e1e1e; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 400px; margin: auto; }
-        .nappi { padding: 20px; margin: 10px; border-radius: 15px; width: 100%; font-size: 18px; border: none; font-weight: bold; transition: 0.3s; cursor: pointer; }
-        #kello { font-size: 70px; color: #00ffcc; margin: 10px 0; font-family: 'Courier New', monospace; }
-        #ohjeistus { min-height: 100px; font-size: 19px; line-height: 1.5; color: #fff; padding: 10px; border-left: 4px solid #00ffcc; background: #252525; border-radius: 5px; }
-        .metronomi-valo { width: 20px; height: 20px; border-radius: 50%; background: #333; margin: 10px auto; display: none; }
+        body { background: #0f0f0f; color: #d4af37; font-family: 'Georgia', serif; text-align: center; padding: 15px; margin: 0; }
+        .kortti { background: #1a1a1a; padding: 25px; border-radius: 30px; box-shadow: 0 0 50px rgba(212, 175, 55, 0.2); max-width: 450px; margin: auto; border: 2px solid #d4af37; }
+        h1 { color: #d4af37; text-transform: uppercase; letter-spacing: 4px; font-size: 24px; margin-bottom: 5px; }
+        p.ala { color: #888; font-style: italic; margin-bottom: 20px; }
+        .nappi { padding: 20px; margin: 10px 0; border-radius: 15px; width: 100%; font-size: 18px; border: none; font-weight: bold; cursor: pointer; transition: 0.4s; }
+        .munkki-nappi { background: #8b0000; color: #ffd700; border: 1px solid #ffd700; }
+        #kello { font-size: 65px; color: #d4af37; margin: 15px 0; font-family: 'Courier New', monospace; }
+        #visualisointi { width: 100%; height: 100px; background: #000; border-radius: 15px; margin: 15px 0; border: 1px solid #d4af37; }
+        #ohjeistus { min-height: 100px; font-size: 19px; background: #251010; padding: 20px; border-radius: 15px; border-left: 8px solid #8b0000; line-height: 1.6; color: #f0e68c; }
+        select { width: 100%; padding: 15px; border-radius: 10px; background: #333; color: #d4af37; border: 1px solid #d4af37; font-size: 16px; margin-bottom: 15px; }
+        audio { width: 100%; margin-top: 20px; filter: sepia(100%) saturate(200%) brightness(70%); }
     </style>
 </head>
 <body>
     <div class="kortti">
-        <div id="alku">
-            <h1>AI MESTARI</h1>
-            <p>Valitse intensiivinen 5min treeni:</p>
-            <button class="nappi" style="background: #007bff; color: white;" onclick="aloita('kurkku')">🎤 KURKKULAULU + DRONE</button>
-            <button class="nappi" style="background: #fd7e14; color: white;" onclick="aloita('cajon')">🥁 CAJÓN + METRONOMI</button>
+        <div id="alkunäyttö">
+            <h1>AI OPETTAJA</h1>
+            <p class="ala">Rauhoittuminen & Resonanssi</p>
+            
+            <p>Valitse istunnon pituus:</p>
+            <select id="kestoValinta">
+                <option value="300">5 minuuttia (Iltahetki)</option>
+                <option value="900">15 minuuttia (Syvä rauhoittuminen)</option>
+                <option value="1800">30 minuuttia (Munkkien retriitti)</option>
+            </select>
+
+            <button class="nappi munkki-nappi" onclick="aloitaTreeni('munkki')">🧘‍♂️ TIIBETILÄINEN HYMINÄ (UUSI)</button>
+            <button class="nappi" style="background: #444; color: #ccc;" onclick="aloitaTreeni('kurkku')">🎤 Perus-Kurkkulaulu</button>
+            <button class="nappi" style="background: #444; color: #ccc;" onclick="aloitaTreeni('cajon')">🥁 Cajón-rummutus</button>
         </div>
 
-        <div id="treeni" style="display:none;">
-            <h2 id="otsikko"></h2>
-            <div id="metronomiValo" class="metronomi-valo"></div>
+        <div id="treeninäyttö" style="display:none;">
+            <h2 id="lajiOtsikko">MUNKKIEN HYMINÄ</h2>
+            <canvas id="visualisointi"></canvas>
             <div id="kello">05:00</div>
-            <p id="ohjeistus"></p>
-            <button class="nappi" style="background: #333; color: #888;" onclick="pysayta()">LOPETA TREENI</button>
+            <p id="ohjeistus">Sulje silmät ja hengitä syvään...</p>
+            <button class="nappi" style="background: #333; color: #d4af37; border: 1px solid #d4af37;" onclick="lopetaTreeni()">LOPETA JA KUUNTELE</button>
+        </div>
+
+        <div id="palauteikkuna" style="display:none; margin-top:20px;">
+            <h2>RAUHA SAAVUTETTU</h2>
+            <p id="vointiKysymys"></p>
+            <audio id="tallenne" controls></audio>
+            <button class="nappi munkki-nappi" style="margin-top:20px;" onclick="location.reload()">ALKUUN</button>
         </div>
     </div>
 
     <script>
-        let sekunnit = 300;
-        let ajastin;
+        let sekunnit, ajastin, mediaRecorder, chunks = [];
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const puhuja = window.speechSynthesis;
-
-        // --- ÄÄNIGENERATORIT ---
-        function soitaMetronomi() {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = 880;
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
-            
-            const valo = document.getElementById('metronomiValo');
-            valo.style.background = '#00ffcc';
-            setTimeout(() => valo.style.background = '#333', 100);
-        }
-
         let droneOsc;
-        function aloitaDrone() {
-            droneOsc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            droneOsc.type = 'sawtooth'; // Kurkkulauluun sopiva rikas ääni
-            droneOsc.frequency.value = 65.41; // Matala C
-            gain.gain.value = 0.05;
-            droneOsc.connect(gain);
-            gain.connect(audioCtx.destination);
-            droneOsc.start();
-        }
 
         function puhu(t) {
             puhuja.cancel();
             const l = new SpeechSynthesisUtterance(t);
             l.lang = 'fi-FI';
-            l.rate = 0.9;
+            l.rate = 0.8; // Erityisen rauhallinen puhe
             puhuja.speak(l);
         }
 
-        const ohjeet = {
-            kurkku: [
-                { aika: 299, teksti: "Tervetuloa mestari. Kuulet taustalla matalan soinnun. Yritä sovittaa oma äänesi tähän samaan matalaan taajuuteen." },
-                { aika: 240, teksti: "Loistavaa. Nyt, ala hitaasti liikuttaa kieltäsi kitalaessa. Etsi se kohta, jossa koodi ja äänesi kohtaavat vihellyksenä." },
-                { aika: 120, teksti: "Puoliväli. Kokeile nyt rytmittää ääntäsi puskemalla vatsalla ilmaa pienissä pätkissä: h-h-h." }
-            ],
-            cajon: [
-                { aika: 299, teksti: "Cajón-treeni. Seuraa metronomia. Aloita pelkällä bassolla joka neljännellä iskulla." },
-                { aika: 240, teksti: "Lisää slap reunaan. Pidä selkä suorana ja anna käsien pudota rennosti." },
-                { aika: 120, teksti: "Nyt kokeillaan tuplaiskuja. Basso-basso-slap. Kuuntele tarkasti metronomin sykettä." }
-            ]
-        };
-
-        function aloita(laji) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            document.getElementById('alku').style.display = 'none';
-            document.getElementById('treeni').style.display = 'block';
-            document.getElementById('otsikko').innerText = laji === 'kurkku' ? 'MANTRA-TILA' : 'RYTMI-TILA';
+        async function aloitaTreeni(laji) {
+            sekunnit = parseInt(document.getElementById('kestoValinta').value);
+            chunks = [];
             
-            if (laji === 'kurkku') aloitaDrone();
-            if (laji === 'cajon') {
-                document.getElementById('metronomiValo').style.display = 'block';
-                setInterval(() => { if(sekunnit > 0) soitaMetronomi() }, 1000); // 60 BPM
-            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                
+                const source = audioCtx.createMediaStreamSource(stream);
+                const analyser = audioCtx.createAnalyser();
+                source.connect(analyser);
+                piirräAalto(analyser);
 
-            ajastin = setInterval(() => {
-                sekunnit--;
-                const min = Math.floor(sekunnit / 60);
-                const sek = sekunnit % 60;
-                document.getElementById('kello').innerText = `${min}:${sek.toString().padStart(2,'0')}`;
+                mediaRecorder.ondataavailable = e => chunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    document.getElementById('tallenne').src = window.URL.createObjectURL(blob);
+                };
+
+                document.getElementById('alkunäyttö').style.display = 'none';
+                document.getElementById('treeninäyttö').style.display = 'block';
                 
-                const v = ohjeet[laji].find(o => o.aika === sekunnit);
-                if(v) { document.getElementById('ohjeistus').innerText = v.teksti; puhu(v.teksti); }
+                mediaRecorder.start();
                 
-                if(sekunnit <= 0) pysayta("Mestari! Treeni suoritettu. Striikkisi kasvaa voimassa.");
-            }, 1000);
+                if (laji === 'munkki') {
+                    soitaMunkkiDrone();
+                    document.getElementById('lajiOtsikko').innerText = "🧘‍♂️ SYVÄ HYMINÄ";
+                    puhu("Istu suorassa. Sulje silmät. Aloita matala, hidas hyminä m-kirjaimella. Anna koko rintakehäsi värähdellä.");
+                } else if (laji === 'kurkku') {
+                    soitaPerusDrone();
+                }
+
+                paivitaKello();
+                ajastin = setInterval(tikitys, 1000);
+                
+            } catch (err) {
+                alert("Mikrofoni tarvitaan.");
+            }
         }
 
-        function pysayta(v = "Treeni lopetettu") {
+        function tikitys() {
+            sekunnit--;
+            paivitaKello();
+            
+            if (sekunnit === 240) puhu("Tunne kuinka ääni maadoittaa sinut. Älä yritä liikaa, anna äänen vain valua ulos.");
+            if (sekunnit === 120) puhu("Keskity värinään huulillasi ja rinnassasi. Olet turvassa.");
+            if (sekunnit <= 0) lopetaTreeni();
+        }
+
+        function paivitaKello() {
+            const min = Math.floor(sekunnit / 60);
+            const sek = sekunnit % 60;
+            document.getElementById('kello').innerText = `${min}:${sek.toString().padStart(2,'0')}`;
+        }
+
+        function lopetaTreeni() {
             clearInterval(ajastin);
-            if (droneOsc) droneOsc.stop();
-            alert(v);
-            location.reload();
+            if(mediaRecorder) mediaRecorder.stop();
+            if(droneOsc) droneOsc.stop();
+            document.getElementById('treeninäyttö').style.display = 'none';
+            document.getElementById('palauteikkuna').style.display = 'block';
+            const vointi = "Miltä kehossasi tuntuu nyt? Onko olo rauhallisempi?";
+            document.getElementById('vointiKysymys').innerText = vointi;
+            puhu(vointi);
+        }
+
+        function piirräAalto(analyser) {
+            const canvas = document.getElementById('visualisointi');
+            const ctx = canvas.getContext('2d');
+            const data = new Uint8Array(analyser.frequencyBinCount);
+            function piirra() {
+                analyser.getByteTimeDomainData(data);
+                ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.lineWidth = 2; ctx.strokeStyle = '#d4af37'; ctx.beginPath();
+                let x = 0; let sliceWidth = canvas.width / data.length;
+                for(let i=0; i<data.length; i++) {
+                    let v = data[i]/128.0; let y = v*canvas.height/2;
+                    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                    x += sliceWidth;
+                }
+                ctx.stroke(); requestAnimationFrame(piirra);
+            }
+            piirra();
+        }
+
+        function soitaMunkkiDrone() {
+            droneOsc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            droneOsc.type = 'sine'; // Pehmeä aalto rauhoittumiseen
+            droneOsc.frequency.value = 55.00; // Erittäin matala A
+            g.gain.value = 0.05;
+            droneOsc.connect(g); g.connect(audioCtx.destination);
+            droneOsc.start();
+        }
+
+        function soitaPerusDrone() {
+            droneOsc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            droneOsc.type = 'sawtooth';
+            droneOsc.frequency.value = 65.41;
+            g.gain.value = 0.03;
+            droneOsc.connect(g); g.connect(audioCtx.destination);
+            droneOsc.start();
         }
     </script>
 </body>
