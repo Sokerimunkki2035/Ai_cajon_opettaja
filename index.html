@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Opettaja</title>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .nappi { padding: 20px; margin: 10px; border-radius: 10px; width: 90%; font-size: 18px; border: none; cursor: pointer; }
+        #kello { font-size: 70px; color: #00ff00; margin: 20px 0; }
+        #ohjeistus { min-height: 60px; font-style: italic; color: #ccc; }
+    </style>
+</head>
+<body>
+    <div id="alku">
+        <h1>VALITSE TREENI</h1>
+        <button class="nappi" style="background: #4A90E2;" onclick="aloita('kurkku')">🎤 Kurkkulaulu (5 min)</button>
+        <button class="nappi" style="background: #F5A623;" onclick="aloita('cajon')">🥁 Cajón-rumpu (5 min)</button>
+    </div>
+
+    <div id="treeni" style="display:none;">
+        <h2 id="otsikko"></h2>
+        <div id="kello">05:00</div>
+        <p id="ohjeistus"></p>
+        <button class="nappi" style="background: red;" onclick="pysayta('Keskeytetty')">LOPETA</button>
+    </div>
+
+    <script>
+        let sekunnit = 300;
+        let ajastin;
+        const puhe = window.speechSynthesis;
+
+        const ohjeet = {
+            kurkku: [
+                { aika: 300, teksti: "Tervetuloa. Aloita matalalla ooo-äänellä." },
+                { aika: 240, teksti: "Hyvä. Muuta huulet uusta iihin hitaasti." },
+                { aika: 120, teksti: "Puoliväli! Tunne värinä rinnassa." },
+                { aika: 10, teksti: "Loppukiri, hienoa työtä!" }
+            ],
+            cajon: [
+                { aika: 300, teksti: "Cajón alkaa. Lyö hitaasti bassoa keskelle." },
+                { aika: 240, teksti: "Lisää slap-isku reunaan. Basso, slap, basso, slap." },
+                { aika: 120, teksti: "Hyvä rytmi! Kokeile nopeuttaa hieman." },
+                { aika: 10, teksti: "Melkein valmista, striikki on lähellä!" }
+            ]
+        };
+
+        function puhu(t) {
+            const l = new SpeechSynthesisUtterance(t);
+            l.lang = 'fi-FI';
+            puhe.speak(l);
+        }
+
+        function aloita(laji) {
+            document.getElementById('alku').style.display = 'none';
+            document.getElementById('treeni').style.display = 'block';
+            document.getElementById('otsikko').innerText = laji.toUpperCase();
+            
+            ajastin = setInterval(() => {
+                sekunnit--;
+                const min = Math.floor(sekunnit / 60);
+                const sek = sekunnit % 60;
+                document.getElementById('kello').innerText = `${min}:${sek.toString().padStart(2,'0')}`;
+                
+                const v = ohjeet[laji].find(o => o.aika === sekunnit);
+                if(v) { document.getElementById('ohjeistus').innerText = v.teksti; puhu(v.teksti); }
+                if(sekunnit <= 0) pysayta("Upeaa! Päivän treeni tehty!");
+            }, 1000);
+        }
+
+        function pysayta(v) {
+            clearInterval(ajastin);
+            alert(v);
+            location.reload();
+        }
+    </script>
+</body>
+</html>
