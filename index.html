@@ -3,138 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI OPETTAJA - PÄIVÄ 2</title>
+    <title>AI OPETTAJA</title>
     <style>
         body { background: #121212; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 15px; margin: 0; }
         .kortti { background: #1e1e1e; padding: 25px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); max-width: 450px; margin: auto; border: 1px solid #444; }
         h1 { color: #00ffcc; text-transform: uppercase; font-size: 24px; margin-bottom: 5px; }
-        .paiva-tunniste { background: #00ffcc; color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
         .nappi { padding: 18px; margin: 8px 0; border-radius: 15px; width: 100%; font-size: 17px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .uusi-nappi { background: #ff00ff; color: white; box-shadow: 0 0 15px rgba(255,0,255,0.4); }
-        #kello { font-size: 65px; color: #00ffcc; margin: 15px 0; font-family: monospace; }
+        .ohje-box { display: none; background: #2a2a2a; color: #fff; padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; font-size: 15px; line-height: 1.5; border-left: 5px solid #00ffcc; }
+        .yt-linkki { color: #ff0000; text-decoration: none; font-weight: bold; display: block; margin-top: 10px; }
         #visualisointi { width: 100%; height: 80px; background: #000; border-radius: 12px; margin: 15px 0; border: 2px solid #00ffcc; }
-        #ohjeistus { min-height: 90px; font-size: 17px; background: #252525; padding: 15px; border-radius: 12px; border-left: 6px solid #ff00ff; line-height: 1.5; }
-        audio { width: 100%; margin-top: 20px; }
+        #kello { font-size: 60px; color: #00ffcc; font-family: monospace; }
     </style>
 </head>
 <body>
     <div class="kortti">
         <div id="alkunäyttö">
             <h1>AI OPETTAJA</h1>
-            <div class="paiva-tunniste">PÄIVÄ 2: UUDET TEKNIIKAT</div>
+            <p>Valitse päivän harjoitus:</p>
             
-            <p>Valitse tämän päivän haaste:</p>
-            <button class="nappi uusi-nappi" onclick="aloitaTreeni('xoomej')">🎤 TUVALAINEN XÖÖMEJ (UUSI)</button>
-            <button class="nappi uusi-nappi" onclick="aloitaTreeni('sormet')">🥁 SORMIRUMMUTUS (UUSI)</button>
-            
-            <hr style="border: 0; border-top: 1px solid #444; margin: 20px 0;">
-            <button class="nappi" style="background: #333; color: #888;" onclick="aloitaTreeni('munkki')">🧘‍♂️ Eilinen: Munkkien hyminä</button>
+            <button class="nappi" style="background: #ff00ff; color: white;" onclick="naytaOhje('xoomej')">🎤 XÖÖMEJ (Tuuletus)</button>
+            <div id="ohje-xoomej" class="ohje-box">
+                <strong>Xöömej-tekniikka:</strong><br>
+                1. Laula matala "Ööö".<br>
+                2. Nosta kieltä lähemmäs kitalakea mutta älä kosketa sitä.<br>
+                3. Muotoile huulet hitaasti: <em>Ööö -> Uuu -> Ooo -> Iii</em>.<br>
+                4. Kuuntele metallista vihellystä perusäänen päällä.<br>
+                <a href="https://www.youtube.com/results?search_query=Tuvan+throat+singing+Khoomei+tutorial+beginners" target="_blank" class="yt-linkki">▶ Etsi opetusvideoita</a>
+                <button class="nappi" style="background:#007bff; margin-top:10px;" onclick="aloitaTreeni('xoomej')">ALOITA TREENI</button>
+            </div>
+
+            <button class="nappi" style="background: #007bff; color: white;" onclick="naytaOhje('sormet')">🥁 SORMIRUMMUTUS</button>
+            <div id="ohje-sormet" class="ohje-box">
+                <strong>Sormirummutus (Finger Roll):</strong><br>
+                1. Aseta kämmenen alaosa cajónin yläreunaan.<br>
+                2. "Juokse" sormilla reunaan: nimetön, keskisormi, etusormi peräkkäin.<br>
+                3. Tavoittele tasaista sarjaa, ei kovia iskuja.<br>
+                <a href="https://www.youtube.com/results?search_query=Cajon+finger+roll+technique+tutorial" target="_blank" class="yt-linkki">▶ Etsi opetusvideoita</a>
+                <button class="nappi" style="background:#007bff; margin-top:10px;" onclick="aloitaTreeni('sormet')">ALOITA TREENI</button>
+            </div>
+
+            <button class="nappi" style="background: #8b0000; color: #ffd700;" onclick="naytaOhje('munkki')">🧘‍♂️ MUNKKIEN HYMINÄ</button>
+            <div id="ohje-munkki" class="ohje-box">
+                <strong>Tiibetiläinen hyminä:</strong><br>
+                1. Istu suorassa, sulje silmät.<br>
+                2. Hengitä syvään vatsaan.<br>
+                3. Tee matalaa "Mmmm"-ääntä niin, että rintakehä värisee.<br>
+                <a href="https://www.youtube.com/results?search_query=Tibetan+monk+chanting+meditation+tutorial" target="_blank" class="yt-linkki">▶ Etsi opetusvideoita</a>
+                <button class="nappi" style="background:#007bff; margin-top:10px;" onclick="aloitaTreeni('munkki')">ALOITA TREENI</button>
+            </div>
         </div>
 
         <div id="treeninäyttö" style="display:none;">
-            <h2 id="lajiOtsikko">TREENI KÄYNNISSÄ</h2>
+            <h2 id="lajiOtsikko">HARJOITUS</h2>
             <canvas id="visualisointi"></canvas>
             <div id="kello">05:00</div>
-            <p id="ohjeistus">Valmistaudu...</p>
             <button class="nappi" style="background: #444; color: white;" onclick="lopetaTreeni()">LOPETA JA TALLENNA</button>
         </div>
 
         <div id="palauteikkuna" style="display:none;">
-            <h2>PÄIVÄ 2 TALLENNETTU!</h2>
+            <h2>TALLENNE VALMIS</h2>
             <audio id="tallenne" controls></audio>
-            <button class="nappi" style="background: #28a745; color: white; margin-top:15px;" onclick="location.reload()">Palaa valikkoon</button>
+            <button class="nappi" style="background: #28a745; color: white;" onclick="location.reload()">VALIKKOON</button>
         </div>
     </div>
 
     <script>
         let sekunnit = 300, ajastin, mediaRecorder, chunks = [];
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const puhuja = window.speechSynthesis;
-        let droneOsc;
 
-        function puhu(t) {
-            puhuja.cancel();
-            const l = new SpeechSynthesisUtterance(t);
-            l.lang = 'fi-FI';
-            puhuja.speak(l);
+        function naytaOhje(id) {
+            document.querySelectorAll('.ohje-box').forEach(el => el.style.display = 'none');
+            document.getElementById('ohje-' + id).style.display = 'block';
         }
 
         async function aloitaTreeni(laji) {
-            chunks = [];
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
-                
-                const source = audioCtx.createMediaStreamSource(stream);
-                const analyser = audioCtx.createAnalyser();
-                source.connect(analyser);
-                piirräAalto(analyser);
-
                 mediaRecorder.ondataavailable = e => chunks.push(e.data);
                 mediaRecorder.onstop = () => {
                     const blob = new Blob(chunks, { type: 'audio/webm' });
                     document.getElementById('tallenne').src = window.URL.createObjectURL(blob);
                 };
-
+                
                 document.getElementById('alkunäyttö').style.display = 'none';
                 document.getElementById('treeninäyttö').style.display = 'block';
-                
                 mediaRecorder.start();
-
-                if (laji === 'xoomej') {
-                    document.getElementById('lajiOtsikko').innerText = "🎤 XÖÖMEJ-TEKNIIKKA";
-                    soitaDrone(130.81); // Matala C
-                    puhu("Päivä kaksi. Xöömej on tuulen huminaa. Tee pehmeä perusääni ja kokeile muuttaa suusi muotoa uusta iihin. Etsi vihellystä.");
-                } else if (laji === 'sormet') {
-                    document.getElementById('lajiOtsikko').innerText = "🥁 SORMIRUMMUTUS";
-                    soitaMetronomi();
-                    puhu("Cajón ja sormet. Pidä kämmen rummulla ja kokeile 'juosta' sormilla reunaan. Etusormi, keskisormi, nimetön. Rytmitä iskut metronomiin.");
-                } else if (laji === 'munkki') {
-                    document.getElementById('lajiOtsikko').innerText = "🧘‍♂️ MUNKKIEN HYMINÄ";
-                    soitaDrone(55.00);
-                    puhu("Palataan rauhaan. Syvä hyminä, anna rinnan värähdellä.");
-                }
-
+                
                 ajastin = setInterval(() => {
                     sekunnit--;
                     const min = Math.floor(sekunnit / 60);
                     const sek = sekunnit % 60;
                     document.getElementById('kello').innerText = `${min}:${sek.toString().padStart(2,'0')}`;
-                    if (sekunnit <= 0) lopetaTreeni();
+                    if(sekunnit <= 0) lopetaTreeni();
                 }, 1000);
-            } catch (err) { alert("Mikrofoni tarvitaan."); }
+
+                const source = audioCtx.createMediaStreamSource(stream);
+                const analyser = audioCtx.createAnalyser();
+                source.connect(analyser);
+                piirräAalto(analyser);
+            } catch (err) { alert("Mikrofoni vaaditaan."); }
         }
 
         function lopetaTreeni() {
             clearInterval(ajastin);
-            if(mediaRecorder) mediaRecorder.stop();
-            if(droneOsc) droneOsc.stop();
+            mediaRecorder.stop();
             document.getElementById('treeninäyttö').style.display = 'none';
             document.getElementById('palauteikkuna').style.display = 'block';
-            puhu("Hienoa työtä. Toinen päivä suoritettu.");
-        }
-
-        function soitaDrone(freq) {
-            droneOsc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            droneOsc.type = 'sawtooth';
-            droneOsc.frequency.value = freq;
-            g.gain.value = 0.03;
-            droneOsc.connect(g); g.connect(audioCtx.destination);
-            droneOsc.start();
-        }
-
-        function soitaMetronomi() {
-            const m = setInterval(() => {
-                if (document.getElementById('treeninäyttö').style.display === 'none') { clearInterval(m); return; }
-                const o = audioCtx.createOscillator();
-                const g = audioCtx.createGain();
-                o.connect(g); g.connect(audioCtx.destination);
-                o.frequency.value = 1000;
-                g.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-                o.start(); o.stop(audioCtx.currentTime + 0.1);
-            }, 500); // 120 BPM sormitreeniin
         }
 
         function piirräAalto(analyser) {
