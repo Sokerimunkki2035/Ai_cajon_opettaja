@@ -1,17 +1,9 @@
-Ymmärretty. Silloin ei mietitä liikaa – tehdään yksi nappi → soitat → saat jotain talteen → jatkat.
-Tässä versiossa:
-▶️ aloitat ja soitat heti
-⏺️ nappi tallentaa 10 sek pätkän automaattisesti
-🧠 saat yksinkertaisen vertailun edelliseen (ei analyysikuormaa)
-🔁 voit jatkaa heti
-👉 Kopioi tämä suoraan uudeksi index.html
-HTML
 <!DOCTYPE html>
 <html lang="fi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nopea musatreeni</title>
+<title>Valitse tapa soittaa</title>
 
 <style>
 body {
@@ -22,7 +14,7 @@ body {
     padding:20px;
 }
 .kortti {
-    max-width:500px;
+    max-width:520px;
     margin:auto;
     background:#161616;
     padding:20px;
@@ -33,12 +25,13 @@ button {
     padding:15px;
     margin-top:10px;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     font-size:16px;
     font-weight:bold;
+    cursor:pointer;
 }
 .start { background:#00ffcc; color:#000; }
-.rec { background:#007bff; color:#fff; }
+.mode { background:#333; color:#fff; }
 .stop { background:#cc0000; }
 
 #viesti {
@@ -67,20 +60,38 @@ button {
 
 <div class="kortti">
 
-<h2>🎧 Soita vain</h2>
+<h2>🎧 Valitse tapa soittaa</h2>
+
+<button class="mode" onclick="setMode('flow')">🌊 Flow (ei stressiä)</button>
+<button class="mode" onclick="setMode('groove')">🥁 Groove (cajón)</button>
+<button class="mode" onclick="setMode('voice')">🎤 Kurkkulaulu</button>
+<button class="mode" onclick="setMode('strict')">🎯 Tarkempi opettaja</button>
 
 <button class="start" onclick="start()">▶️ Aloita</button>
-<button class="rec" onclick="tallenna()">⏺️ Tallenna 10s</button>
 <button class="stop" onclick="stop()">⏹ Lopeta</button>
 
 <div id="meter"><div id="level"></div></div>
-<div id="viesti">valmis</div>
+<div id="viesti">valitse moodi</div>
 
 </div>
 
 <script>
 let ctx, analyser, dataArray, source;
 let running = false;
+let mode = "flow";
+let lastPeak = 0;
+
+const ohjeet = {
+flow: ["jatka…","hyvä…","anna mennä…","pysy tuossa…"],
+groove: ["pidä rytmi…","älä kiirehdi…","tasainen groove…","lisää hiljaisia iskuja"],
+voice: ["rentouta kurkku…","etsi resonanssi…","pidä ääni tasaisena","kokeile matalampaa"],
+strict: ["rytmi karkaa hieman","liian epätasaista","hyvä, jatka näin","tarkempi kontrolli"]
+};
+
+function setMode(m) {
+    mode = m;
+    palaute("moodi: " + m);
+}
 
 async function start() {
     if(running) return;
@@ -109,56 +120,28 @@ function loop() {
 
     analyser.getByteFrequencyData(dataArray);
 
-    let sum = dataArray.reduce((a,b)=>a+b,0);
-    let avg = sum / dataArray.length;
+    let avg = dataArray.reduce((a,b)=>a+b,0) / dataArray.length;
 
     document.getElementById("level").style.width = (avg*2)+"%";
+
+    let now = Date.now();
+
+    if(avg > 50 && now - lastPeak > 300) {
+        lastPeak = now;
+        if(Math.random() < 0.5) annaOhje();
+    }
+
+    if(avg < 20 && Math.random() < 0.02) {
+        annaOhje();
+    }
 
     requestAnimationFrame(loop);
 }
 
-function tallenna() {
-    palaute("🎙️ tallennus...");
-
-    let samples = [];
-    let startTime = Date.now();
-
-    function kerää() {
-        analyser.getByteFrequencyData(dataArray);
-        let avg = dataArray.reduce((a,b)=>a+b,0) / dataArray.length;
-        samples.push(avg);
-
-        if(Date.now() - startTime < 10000) {
-            requestAnimationFrame(kerää);
-        } else {
-            valmis(samples);
-        }
-    }
-
-    kerää();
-}
-
-function valmis(samples) {
-    let avg = samples.reduce((a,b)=>a+b,0) / samples.length;
-
-    let history = JSON.parse(localStorage.getItem("hist") || "[]");
-
-    let viesti = "";
-
-    if(history.length > 0) {
-        let prev = history[0];
-
-        if(avg > prev + 5) viesti = "🔥 enemmän energiaa kuin äsken";
-        else if(avg < prev - 5) viesti = "🌊 rauhallisempi kuin äsken";
-        else viesti = "🎯 aika samanlainen groove";
-    } else {
-        viesti = "tallennettu ensimmäinen";
-    }
-
-    history.unshift(avg);
-    localStorage.setItem("hist", JSON.stringify(history.slice(0,5)));
-
-    palaute(viesti);
+function annaOhje() {
+    let lista = ohjeet[mode];
+    let msg = lista[Math.floor(Math.random()*lista.length)];
+    palaute(msg);
 }
 
 function palaute(t) {
@@ -168,18 +151,3 @@ function palaute(t) {
 
 </body>
 </html>
-🧠 Miten käytät nyt
-paina Aloita
-soita ilman ajattelua
-paina Tallenna
-saat heti:
-pieni kommentti
-jatka
-💬 Tärkein juttu sulle nyt
-Ei tarvitse:
-kehittyä
-onnistua
-ymmärtää
-👉 riittää että teet ääntä
-Jos tästä tulee yhtään hyvä fiilis, seuraava askel voidaan tehdä rauhassa.
-Jos ei – säädetään heti.
