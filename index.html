@@ -3,72 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI OPETTAJA</title>
+    <title>AI OPETTAJA - Rytmi & Resonanssi</title>
     <style>
-        body { background: #121212; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 15px; margin: 0; }
-        .kortti { background: #1e1e1e; padding: 25px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); max-width: 450px; margin: auto; border: 1px solid #444; }
-        h1 { color: #00ffcc; text-transform: uppercase; font-size: 24px; margin-bottom: 5px; }
-        .nappi { padding: 18px; margin: 8px 0; border-radius: 15px; width: 100%; font-size: 17px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .ohje-box { display: none; background: #2a2a2a; color: #fff; padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; font-size: 15px; line-height: 1.5; border-left: 5px solid #00ffcc; }
-        .yt-linkki { color: #ff0000; text-decoration: none; font-weight: bold; display: block; margin-top: 10px; }
-        #visualisointi { width: 100%; height: 80px; background: #000; border-radius: 12px; margin: 15px 0; border: 2px solid #00ffcc; }
-        #kello { font-size: 60px; color: #00ffcc; font-family: monospace; }
+        body { background: #0f0f0f; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 10px; margin: 0; }
+        .kortti { background: #1a1a1a; padding: 20px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,255,204,0.1); max-width: 450px; margin: auto; border: 1px solid #333; }
+        h1 { color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; font-size: 22px; }
+        .nappi { padding: 15px; margin: 8px 0; border-radius: 12px; width: 100%; font-size: 16px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; }
+        .ohje-box { display: none; background: #252525; padding: 15px; border-radius: 12px; margin-top: 10px; text-align: left; font-size: 14px; border-left: 5px solid #00ffcc; }
+        select { width: 100%; padding: 12px; border-radius: 8px; background: #333; color: #00ffcc; border: 1px solid #00ffcc; margin: 10px 0; font-weight: bold; }
+        #visualisointi { width: 100%; height: 80px; background: #000; border-radius: 10px; margin: 15px 0; border: 1px solid #444; }
+        #kello { font-size: 55px; color: #00ffcc; font-family: monospace; margin: 10px 0; }
+        .yt-linkki { color: #ff4444; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="kortti">
         <div id="alkunäyttö">
             <h1>AI OPETTAJA</h1>
-            <p>Valitse päivän harjoitus:</p>
+            <p style="font-size: 0.9em; color: #888;">Valitse päivän harjoitus ja rytmi:</p>
             
-            <button class="nappi" style="background: #ff00ff; color: white;" onclick="naytaOhje('xoomej')">🎤 XÖÖMEJ (Tuuletus)</button>
+            <label style="font-size: 12px; color: #00ffcc;">METRONOMIN RYTMI:</label>
+            <select id="rytmiValinta">
+                <option value="500">Tasainen 120 BPM (Perus)</option>
+                <option value="750">Rauhallinen 80 BPM (Munkki/Hidas)</option>
+                <option value="333">Nopea 180 BPM (Sormirullaus)</option>
+                <option value="trioli">Laukkaava rytmi (Trioli)</option>
+            </select>
+
+            <button class="nappi" style="background: #ff00ff;" onclick="naytaOhje('xoomej')">🎤 XÖÖMEJ (Tuuletus)</button>
             <div id="ohje-xoomej" class="ohje-box">
-                <strong>Xöömej-tekniikka:</strong><br>
-                1. Laula matala "Ööö".<br>
-                2. Nosta kieltä lähemmäs kitalakea mutta älä kosketa sitä.<br>
-                3. Muotoile huulet hitaasti: <em>Ööö -> Uuu -> Ooo -> Iii</em>.<br>
-                4. Kuuntele metallista vihellystä perusäänen päällä.<br>
-                <a href="https://www.youtube.com/results?search_query=Tuvan+throat+singing+Khoomei+tutorial+beginners" target="_blank" class="yt-linkki">▶ Etsi opetusvideoita</a>
+                <strong>Vinkki:</strong> Jos vihellystä ei kuulu, kokeile "hymähtää" nenän kautta samalla kun laulat. Se nostaa usein pehmeää kitalakea.
+                <a href="https://www.youtube.com/results?search_query=Tuvan+throat+singing+Khoomei+tutorial" target="_blank" class="yt-linkki">▶ Katso videot</a>
                 <button class="nappi" style="background:#007bff; margin-top:10px;" onclick="aloitaTreeni('xoomej')">ALOITA TREENI</button>
             </div>
 
-            <button class="nappi" style="background: #007bff; color: white;" onclick="naytaOhje('sormet')">🥁 SORMIRUMMUTUS</button>
+            <button class="nappi" style="background: #007bff;" onclick="naytaOhje('sormet')">🥁 SORMIRUMMUTUS</button>
             <div id="ohje-sormet" class="ohje-box">
-                <strong>Sormirummutus (Finger Roll):</strong><br>
-                1. Aseta kämmenen alaosa cajónin yläreunaan.<br>
-                2. "Juokse" sormilla reunaan: nimetön, keskisormi, etusormi peräkkäin.<br>
-                3. Tavoittele tasaista sarjaa, ei kovia iskuja.<br>
-                <a href="https://www.youtube.com/results?search_query=Cajon+finger+roll+technique+tutorial" target="_blank" class="yt-linkki">▶ Etsi opetusvideoita</a>
+                <strong>Harjoitus:</strong> Käytä valittua rytmiä sormien "juoksuharjoitukseen". Yritä osua jokaiseen metronomin iskuun eri sormella.
+                <a href="https://www.youtube.com/results?search_query=Cajon+finger+roll+technique" target="_blank" class="yt-linkki">▶ Katso videot</a>
                 <button class="nappi" style="background:#007bff; margin-top:10px;" onclick="aloitaTreeni('sormet')">ALOITA TREENI</button>
             </div>
 
             <button class="nappi" style="background: #8b0000; color: #ffd700;" onclick="naytaOhje('munkki')">🧘‍♂️ MUNKKIEN HYMINÄ</button>
             <div id="ohje-munkki" class="ohje-box">
-                <strong>Tiibetiläinen hyminä:</strong><br>
-                1. Istu suorassa, sulje silmät.<br>
-                2. Hengitä syvään vatsaan.<br>
-                3. Tee matalaa "Mmmm"-ääntä niin, että rintakehä värisee.<br>
-                <a href="https://www.youtube.com/results?search_query=Tibetan+monk+chanting+meditation+tutorial" target="_blank" class="yt-linkki">▶ Etsi opetusvideoita</a>
+                <strong>Rauhoittuminen:</strong> Valitse hidas rytmi ja anna hyminän seurata sitä kuin syke.
+                <a href="https://www.youtube.com/results?search_query=Tibetan+monk+chanting+meditation" target="_blank" class="yt-linkki">▶ Katso videot</a>
                 <button class="nappi" style="background:#007bff; margin-top:10px;" onclick="aloitaTreeni('munkki')">ALOITA TREENI</button>
             </div>
         </div>
 
         <div id="treeninäyttö" style="display:none;">
-            <h2 id="lajiOtsikko">HARJOITUS</h2>
+            <h2 id="lajiOtsikko" style="font-size: 18px;">HARJOITUS</h2>
             <canvas id="visualisointi"></canvas>
             <div id="kello">05:00</div>
-            <button class="nappi" style="background: #444; color: white;" onclick="lopetaTreeni()">LOPETA JA TALLENNA</button>
+            <button class="nappi" style="background: #444;" onclick="lopetaTreeni()">LOPETA JA TALLENNA</button>
         </div>
 
         <div id="palauteikkuna" style="display:none;">
             <h2>TALLENNE VALMIS</h2>
-            <audio id="tallenne" controls></audio>
-            <button class="nappi" style="background: #28a745; color: white;" onclick="location.reload()">VALIKKOON</button>
+            <audio id="tallenne" controls style="width:100%"></audio>
+            <button class="nappi" style="background: #28a745;" onclick="location.reload()">PALAA ALKUUN</button>
         </div>
     </div>
 
     <script>
-        let sekunnit = 300, ajastin, mediaRecorder, chunks = [];
+        let sekunnit = 300, ajastin, mediaRecorder, chunks = [], metronomiInterval;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function naytaOhje(id) {
@@ -89,6 +88,7 @@
                 document.getElementById('alkunäyttö').style.display = 'none';
                 document.getElementById('treeninäyttö').style.display = 'block';
                 mediaRecorder.start();
+                kaynnistaMetronomi();
                 
                 ajastin = setInterval(() => {
                     sekunnit--;
@@ -105,9 +105,36 @@
             } catch (err) { alert("Mikrofoni vaaditaan."); }
         }
 
+        function kaynnistaMetronomi() {
+            const rytmiValinta = document.getElementById('rytmiValinta').value;
+            let tick = 0;
+
+            const soitaIsku = (freq = 1000, vol = 0.1) => {
+                const o = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                o.connect(g); g.connect(audioCtx.destination);
+                o.frequency.value = freq;
+                g.gain.setValueAtTime(vol, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                o.start(); o.stop(audioCtx.currentTime + 0.1);
+            };
+
+            if (rytmiValinta === 'trioli') {
+                metronomiInterval = setInterval(() => {
+                    soitaIsku(tick % 3 === 0 ? 1200 : 800, 0.08);
+                    tick++;
+                }, 200); // Nopea kolmijakoinen rytmi
+            } else {
+                metronomiInterval = setInterval(() => {
+                    soitaIsku(1000, 0.08);
+                }, parseInt(rytmiValinta));
+            }
+        }
+
         function lopetaTreeni() {
             clearInterval(ajastin);
-            mediaRecorder.stop();
+            clearInterval(metronomiInterval);
+            if (mediaRecorder) mediaRecorder.stop();
             document.getElementById('treeninäyttö').style.display = 'none';
             document.getElementById('palauteikkuna').style.display = 'block';
         }
@@ -132,4 +159,5 @@
         }
     </script>
 </body>
-</html> 
+</html>
+ 
