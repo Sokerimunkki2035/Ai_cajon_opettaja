@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cajon-soiton opetus</title>
+    <title>Cajon-soiton harjoittelu</title>
     <style>
         body {
             background: #0a0a0a;
@@ -40,6 +40,19 @@
         .start { background: #00ffcc; color: #000; }
         .mode { background: #333; color: #fff; }
         .stop { background: #cc0000; color: #fff; }
+        .videoControls {
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        .videoControls button {
+            width: auto;
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            border-radius: 5px;
+        }
         #viesti {
             margin: 20px auto;
             font-size: 20px;
@@ -60,31 +73,22 @@
             background: #00ffcc;
             border-radius: 10px;
         }
+        #player {
+            width: 100%;
+            max-width: 560px;
+            height: 315px;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
         #videoContainer {
             margin-top: 30px;
             text-align: center;
-        }
-        #videos {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .videoWrapper {
-            width: 320px;
-            margin: 10px;
-        }
-        iframe {
-            width: 100%;
-            height: 200px;
-            border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="kortti">
-        <h1>🥁 Cajon-soiton opetus</h1>
+        <h1>🥁 Cajon-soiton harjoittelu</h1>
 
         <h2>🎧 Valitse tapa soittaa</h2>
 
@@ -100,12 +104,18 @@
         <div id="viesti">valitse moodi</div>
 
         <div id="videoContainer">
-            <h3>Helppoja cajon-rummun kappaleita aloittelijoille</h3>
-            <div id="videos"></div>
+            <h3>Harjoittele videon kanssa</h3>
+            <div id="player"></div>
+            <div class="videoControls">
+                <button onclick="slowDown()">Hidasta 0.5x</button>
+                <button onclick="rewind()">Palauta 10s</button>
+                <button onclick="normalSpeed()">Normaalinopeus</button>
+            </div>
         </div>
     </div>
 
     <script>
+        // Äänianalyysi (sinun eilinen koodisi)
         let ctx, analyser, dataArray, source;
         let running = false;
         let mode = "flow";
@@ -125,17 +135,13 @@
 
         async function start() {
             if (running) return;
-
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
             source = ctx.createMediaStreamSource(stream);
             analyser = ctx.createAnalyser();
             analyser.fftSize = 256;
-
             source.connect(analyser);
             dataArray = new Uint8Array(analyser.frequencyBinCount);
-
             running = true;
             loop();
         }
@@ -147,24 +153,15 @@
 
         function loop() {
             if (!running) return;
-
             analyser.getByteFrequencyData(dataArray);
-
             let avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-
             document.getElementById("level").style.width = (avg * 2) + "%";
-
             let now = Date.now();
-
             if (avg > 50 && now - lastPeak > 300) {
                 lastPeak = now;
                 if (Math.random() < 0.5) annaOhje();
             }
-
-            if (avg < 20 && Math.random() < 0.02) {
-                annaOhje();
-            }
-
+            if (avg < 20 && Math.random() < 0.02) annaOhje();
             requestAnimationFrame(loop);
         }
 
@@ -178,41 +175,38 @@
             document.getElementById("viesti").innerText = t;
         }
 
-        // Lista YouTube-videoista (ID:t), jotka opettavat helppoja cajon-kappaleita
-        const cajonVideos = [
-            { id: "Su2XlnSdBSM", title: "Cajonin pikakurssi – Beatkomppi (helppoja rytmejä)" },
-            { id: "GHwgjxFOHGs", title: "Cajon tutorial for beginners (englanninkieliset tekstitykset)" },
-            { id: "yoQOBsLhbOY", title: "Cajon-rumpu esittelyssä (peruslyönnit ja rytmit)" }
-        ];
-
-        // Funktio videon upottamiseen
-        function embedVideos() {
-            const container = document.getElementById("videos");
-            cajonVideos.forEach(video => {
-                const wrapper = document.createElement("div");
-                wrapper.className = "videoWrapper";
-
-                const iframe = document.createElement("iframe");
-                iframe.src = `https://www.youtube.com/embed/${video.id}`;
-                iframe.title = video.title;
-                iframe.frameBorder = "0";
-                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-                iframe.allowFullscreen = true;
-
-                const title = document.createElement("p");
-                title.textContent = video.title;
-                title.style.color = "#eee";
-                title.style.marginTop = "5px";
-
-                wrapper.appendChild(iframe);
-                wrapper.appendChild(title);
-                container.appendChild(wrapper);
+        // YouTube-videon ohjaus
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '315',
+                width: '560',
+                videoId: 'Su2XlnSdBSM', // Cajonin pikakurssi (voit vaihtaa)
+                events: { 'onReady': onPlayerReady }
             });
         }
 
-        // Kutsu funktiota sivun ladattuessa
-        window.onload = embedVideos;
+        function onPlayerReady(event) {
+            console.log("Video valmis!");
+        }
+
+        function slowDown() {
+            if (player) player.setPlaybackRate(0.5);
+        }
+
+        function rewind() {
+            if (player) player.seekTo(player.getCurrentTime() - 10);
+        }
+
+        function normalSpeed() {
+            if (player) player.setPlaybackRate(1);
+        }
+
+        // Lataa YouTube IFrame API
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     </script>
 </body>
 </html>
- 
